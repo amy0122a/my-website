@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频去水印工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        h1 { color: #667eea; text-align: center; margin-bottom: 30px; }
+        .section { margin-bottom: 25px; }
+        .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; color: #333; }
+        .platform-buttons { display: flex; gap: 15px; justify-content: center; }
+        .platform-btn { flex: 1; max-width: 200px; padding: 15px; background: #f5f5f5; border: 2px solid #ddd; border-radius: 10px; cursor: pointer; text-align: center; transition: all 0.3s; }
+        .platform-btn:hover, .platform-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .input-wrapper { display: flex; gap: 10px; }
+        .link-input { flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        .paste-btn, .process-btn { padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .paste-btn:hover, .process-btn:hover { background: #5568d3; }
+        .process-btn { display: block; margin: 20px auto; padding: 15px 40px; font-size: 1.1rem; }
+        .result-section { display: none; margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 10px; }
+        .result-info { margin-bottom: 15px; }
+        .info-item { padding: 8px 0; }
+        .download-btn { width: 100%; padding: 15px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
+        .download-btn:hover { background: #059669; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎥 视频去水印工具</h1>
+        
+        <div class="section">
+            <div class="section-title">选择平台</div>
+            <div class="platform-buttons">
+                <button class="platform-btn" onclick="selectPlatform('douyin')">📱 抖音</button>
+                <button class="platform-btn" onclick="selectPlatform('xiaohongshu')">📕 小红书</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">视频链接</div>
+            <div class="input-wrapper">
+                <input type="text" id="videoLink" class="link-input" placeholder="请粘贴视频分享链接...">
+                <button class="paste-btn" onclick="pasteLink()">📋 粘贴</button>
+            </div>
+        </div>
+        
+        <button class="process-btn" onclick="processVideo()">✨ 开始去水印</button>
+        
+        <div class="result-section" id="resultSection">
+            <div class="section-title">处理结果</div>
+            <div class="result-info">
+                <div class="info-item">平台：<span id="resultPlatform">-</span></div>
+                <div class="info-item">标题：<span id="videoTitle">-</span></div>
+                <div class="info-item">状态：<span style="color: #10b981;">处理成功</span></div>
+            </div>
+            <button class="download-btn" onclick="downloadVideo()">⬇️ 下载无水印视频</button>
+        </div>
+    </div>
+    
+    <script>
+        let selectedPlatform = null;
+        let videoData = null;
+        
+        function selectPlatform(platform) {
+            selectedPlatform = platform;
+            document.querySelectorAll('.platform-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            alert('已选择 ' + (platform === 'douyin' ? '抖音' : '小红书'));
+        }
+        
+        async function pasteLink() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('videoLink').value = text;
+            } catch (err) {
+                alert('请手动粘贴链接');
+            }
+        }
+        
+        async function processVideo() {
+            const link = document.getElementById('videoLink').value.trim();
+            if (!selectedPlatform) { alert('请先选择平台'); return; }
+            if (!link) { alert('请输入视频链接'); return; }
+            
+            const urlMatch = link.match(/(https?:\/\/[^\s]+)/);
+            const videoLink = urlMatch ? urlMatch[0] : link;
+            
+            alert('正在解析视频...');
+            
+            try {
+                const formData = new URLSearchParams();
+                formData.append('key', 'puM4bNPd7nBIFcRXBUgvfutGzE');
+                formData.append('url', videoLink);
+                
+                const response = await fetch('https://api.wxshares.com/api/qsy/as', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    videoData = result.data;
+                    document.getElementById('resultPlatform').textContent = selectedPlatform === 'douyin' ? '抖音' : '小红书';
+                    document.getElementById('videoTitle').textContent = result.data.title || '无标题';
+                    document.getElementById('resultSection').style.display = 'block';
+                    alert('解析成功！');
+                } else {
+                    alert('解析失败：' + result.msg);
+                }
+            } catch (error) {
+                alert('网络错误，请重试');
+            }
+        }
+        
+        function downloadVideo() {
+            if (!videoData || !videoData.url) { alert('视频地址不存在'); return; }
+            const link = document.createElement('a');
+            link.href = videoData.url;
+            link.download = (videoData.title || '视频') + '.mp4';
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            alert('下载已开始！');
+        }
+    </script>
+</body>
+</html>
