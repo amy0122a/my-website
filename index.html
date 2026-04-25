@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瑙嗛鍘绘按鍗板伐鍏?/title>
+    <link rel="stylesheet" href="watermark-style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>馃帴 瑙嗛鍘绘按鍗板伐鍏?/h1>
+            <p class="subtitle">鏀寔鎶栭煶銆佸皬绾功瑙嗛涓€閿幓姘村嵃涓嬭浇</p>
+        </header>
+
+        <main class="content">
+            <!-- 骞冲彴閫夋嫨 -->
+            <section class="platform-section">
+                <h2 class="section-title">閫夋嫨骞冲彴</h2>
+                <div class="platform-buttons">
+                    <button class="platform-btn douyin" onclick="selectPlatform('douyin')">
+                        <span class="platform-icon">馃摫</span>
+                        <span class="platform-name">鎶栭煶</span>
+                    </button>
+                    <button class="platform-btn xiaohongshu" onclick="selectPlatform('xiaohongshu')">
+                        <span class="platform-icon">馃摃</span>
+                        <span class="platform-name">灏忕孩涔?/span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 閾炬帴杈撳叆 -->
+            <section class="link-section">
+                <h2 class="section-title">瑙嗛閾炬帴</h2>
+                <div class="link-input-wrapper">
+                    <input 
+                        type="text" 
+                        id="videoLink" 
+                        class="link-input" 
+                        placeholder="璇风矘璐磋棰戝垎浜摼鎺?.."
+                    >
+                    <button class="paste-btn" onclick="pasteLink()">
+                        <span>馃搵</span>
+                    </button>
+                </div>
+                <div class="link-hint">馃挕 鎻愮ず锛氬彲浠ョ洿鎺ョ矘璐村垎浜枃鏈紝浼氳嚜鍔ㄦ彁鍙栭摼鎺?/div>
+            </section>
+
+            <!-- 鎿嶄綔鎸夐挳 -->
+            <section class="action-section">
+                <button class="process-btn" onclick="processVideo()">
+                    <span class="btn-icon">鉁?/span>
+                    寮€濮嬪幓姘村嵃
+                </button>
+            </section>
+
+            <!-- 缁撴灉灞曠ず鍖?-->
+            <section class="result-section" id="resultSection" style="display: none;">
+                <h2 class="section-title">澶勭悊缁撴灉</h2>
+                <div class="result-card">
+                    <div class="video-preview">
+                        <img id="videoCover" src="" alt="瑙嗛灏侀潰" style="display: none;">
+                    </div>
+                    <div class="result-info">
+                        <div class="info-item">
+                            <span class="info-label">骞冲彴锛?/span>
+                            <span class="info-value" id="resultPlatform">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">鏍囬锛?/span>
+                            <span class="info-value" id="videoTitle">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">鐘舵€侊細</span>
+                            <span class="info-value success" id="resultStatus">澶勭悊鎴愬姛</span>
+                        </div>
+                    </div>
+                    
+                    <!-- AI鏀瑰啓鍔熻兘鍖?-->
+                    <div class="ai-rewrite-section">
+                        <h3 class="ai-section-title">馃 AI鏅鸿兘鏀瑰啓</h3>
+                        
+                        <div class="ai-content-grid">
+                            <!-- 鏀瑰啓鏍囬 -->
+                            <div class="ai-content-box">
+                                <div class="ai-box-header">
+                                    <div class="ai-box-title">馃摑 鏀瑰啓鏍囬</div>
+                                    <button class="ai-generate-btn" onclick="generateAIContent('title')">
+                                        <span>鉁?/span> 鐢熸垚
+                                    </button>
+                                </div>
+                                <div class="ai-text-area">
+                                    <div class="ai-loading" id="titleLoading" style="display: none;">
+                                        <div class="loading-spinner"></div>
+                                        <p>AI姝ｅ湪鍒涗綔涓?..</p>
+                                    </div>
+                                    <textarea class="ai-result-text" id="titleResult" readonly placeholder="鐐瑰嚮鐢熸垚鎸夐挳寮€濮婣I鏀瑰啓鏍囬..."></textarea>
+                                </div>
+                                <div class="ai-box-actions" id="titleActions" style="display: none;">
+                                    <button class="ai-refresh-btn" onclick="generateAIContent('title')">
+                                        <span>馃攧</span> 鎹竴鎹?
+                                    </button>
+                                    <button class="ai-copy-btn" onclick="copyContent('title')">
+                                        <span>馃搵</span> 澶嶅埗
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 鏀瑰啓姝ｆ枃 -->
+                            <div class="ai-content-box">
+                                <div class="ai-box-header">
+                                    <div class="ai-box-title">鉁嶏笍 鏀瑰啓姝ｆ枃</div>
+                                    <button class="ai-generate-btn" onclick="generateAIContent('copywriting')">
+                                        <span>鉁?/span> 鐢熸垚
+                                    </button>
+                                </div>
+                                <div class="ai-text-area">
+                                    <div class="ai-loading" id="copywritingLoading" style="display: none;">
+                                        <div class="loading-spinner"></div>
+                                        <p>AI姝ｅ湪鍒涗綔涓?..</p>
+                                    </div>
+                                    <textarea class="ai-result-text" id="copywritingResult" readonly placeholder="鐐瑰嚮鐢熸垚鎸夐挳寮€濮婣I鏀瑰啓姝ｆ枃..."></textarea>
+                                </div>
+                                <div class="ai-box-actions" id="copywritingActions" style="display: none;">
+                                    <button class="ai-refresh-btn" onclick="generateAIContent('copywriting')">
+                                        <span>馃攧</span> 鎹竴鎹?
+                                    </button>
+                                    <button class="ai-copy-btn" onclick="copyContent('copywriting')">
+                                        <span>馃搵</span> 澶嶅埗
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="download-btn" onclick="downloadVideo()">
+                        <span>猬囷笍</span>
+                        涓嬭浇鏃犳按鍗拌棰?
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="watermark-script-new.js"></script>
+</body>
+</html>
